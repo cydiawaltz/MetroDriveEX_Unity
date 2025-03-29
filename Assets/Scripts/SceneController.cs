@@ -1,10 +1,7 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
-using Unity.VisualScripting;
+﻿using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
-using UnityEngine.Video;
 
 namespace MetroDriveEX.Unity
 {
@@ -13,20 +10,20 @@ namespace MetroDriveEX.Unity
         [SerializeField] float speed;
         /*Scene構造(Scene名)
          *                        ⇓------| ⇓-----------------------------|
-         * splash -- opening -- main --  menu -- selecttrain -- wait -- ending
-         *                                  |_ museum ---- music
+         * splash -- ========== -- main --  menu -- selecttrain -- wait -- ending
+         *          openingはsplashに統合    |_ museum ---- music
          *                                  |           |_ model
          *                                  |           |_ picture
          *                                  |_ setting
-         *                                  |_ about
-         *                                  |_(exit) =>これはSceneではない
+         * installing<=初回のみ、installdialo|_ about
+         * ↑はExchange~から案内する          |_exit => 「アプリを終了させる準備ができました(win95風？)」
          */
         private void Start()
         {
-            DontDestroyOnLoad(this);
+            DontDestroyOnLoad(this); 
             this.gameObject.tag = "SceneManager";
         }
-        public async void ChangeScene(string scenename,GameObject target)
+        public async void FadeOut(string scenename,GameObject target)
         {
             RectTransform upBar = (RectTransform)target.transform.Find("upbar");//UI要素は上が原点
             RectTransform bottoms = (RectTransform)target.transform.Find("bottoms");
@@ -42,7 +39,9 @@ namespace MetroDriveEX.Unity
             }
             while(frontImg.a > 0)
             {
-                frontImg = new Color(frontImg.r, frontImg.g, frontImg.b, frontImg.a--);
+                float a = frontImg.a - speed;
+                if (a < 0) a = 0;
+                frontImg = new Color(frontImg.r, frontImg.g, frontImg.b, a);
                 target.transform.Find("front").gameObject.GetComponent<Image>().color = frontImg;
                 await Task.Yield();
             }

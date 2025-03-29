@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using UnityEngine;
-using UnityEngine.SceneManagement;
+﻿using UnityEngine;
 
 namespace MetroDriveEX.Unity
 {
@@ -14,36 +8,38 @@ namespace MetroDriveEX.Unity
         public int MaxScenarioNumber;
         ExchangeInfoToBve ExchangeInfo;
         SceneController Scenecontroller;
+        MediaController Sound;
         private void Start()
         {
             Scenecontroller = GameObject.FindWithTag("SceneManager").gameObject.GetComponent<SceneController>();
+            Sound = GameObject.FindWithTag("MediaController").gameObject.GetComponent<MediaController>();
         }
         private void Update()
         {
             if(Input.GetKeyDown(KeyCode.DownArrow))
             {
                 DiaglamNumber--;
-                PlaySound("pi");
+                Sound.PlaySound(0);//pi
             }
             if(Input.GetKeyDown(KeyCode.UpArrow)) 
             { 
                 DiaglamNumber++;
-                PlaySound("pi");
+                Sound.PlaySound(0);
             }
             if (DiaglamNumber < 0) DiaglamNumber = 0;
             if (DiaglamNumber > MaxScenarioNumber) DiaglamNumber = MaxScenarioNumber;
             if (Input.GetKeyDown(KeyCode.Escape))
             {
-                Scenecontroller.ChangeScene("menu",this.gameObject);
+                Sound.PlaySound(1);//escape sound
+                Scenecontroller.FadeOut("menu",this.gameObject);
             }
             if(Input.GetKeyDown(KeyCode.Return))
             {
+                Sound.PlaySound(2);
+                ExchangeInfo.DiaglamIndex = DiaglamNumber;
                 ExchangeInfo.SendMesToBve("Scenario:" + DiaglamNumber);
+                Scenecontroller.FadeOut("wait", this.gameObject);
             }
-        }
-        void PlaySound(string fileName)
-        {
-
         }
     }
 }
